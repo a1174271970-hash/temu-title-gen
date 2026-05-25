@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: temu-title-generator
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: KIMI_API_KEY
+        sync: false
+      - key: KIMI_MODEL
+        value: kimi-k2.6
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: PORT
+        value: "3000"
