@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>TEMU 鐖嗘鏍囬鐢熸垚鍣?v2</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#1a1a2e;min-height:100vh}
+.container{max-width:1280px;margin:0 auto;padding:16px 20px}
+.header{text-align:center;padding:20px 0 12px}
+.header h1{font-size:28px;font-weight:800;background:linear-gradient(135deg,#ff6a00,#ee0979);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header p{color:#888;font-size:13px;margin-top:2px}
+.card{background:#fff;border-radius:14px;box-shadow:0 2px 16px rgba(0,0,0,.05);padding:20px;margin-bottom:14px;border:1px solid #f0f0f0}
+.card-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}}
+.badge{font-size:10px;padding:1px 7px;border-radius:8px;font-weight:500}
+.badge-required{background:#fff0e6;color:#e05e00}
+.badge-optional{background:#f0f0f0;color:#888}
+.upload-area{border:2px dashed #ddd;border-radius:12px;padding:24px 12px;text-align:center;cursor:pointer;transition:.2s;position:relative}
+.upload-area:hover,.upload-area.dragover{border-color:#ff6a00;background:#fff8f0}
+.upload-area .icon{font-size:28px;margin-bottom:4px}
+.upload-area .tip{color:#aaa;font-size:12px;margin-top:4px}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.file-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.file-tag{display:flex;align-items:center;gap:4px;border-radius:14px;font-size:11px;max-width:240px;padding:2px 8px}
+.file-tag-upload{background:#fff0e6;color:#e05e00}
+.file-tag-url{background:#f3e5f5;color:#7b1fa2}
+.file-tag .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-tag .remove{cursor:pointer;font-weight:700;opacity:.5;font-size:13px;flex-shrink:0}
+.file-tag .remove:hover{opacity:1}
+.txt-area{width:100%;min-height:60px;padding:10px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:13px;line-height:1.6;resize:vertical;outline:0;font-family:inherit}
+.txt-area:focus{border-color:#ff6a00}
+.form-group{margin-bottom:10px}
+.form-group label{display:block;font-size:12px;font-weight:500;color:#666;margin-bottom:3px}
+.form-group input,.form-group select{width:100%;padding:8px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:13px;outline:0}
+.form-group input:focus,.form-group select:focus{border-color:#ff6a00}
+.action-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.btn{padding:10px 22px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,#ff6a00,#ee0979);color:#fff}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.btn-primary:disabled{background:#ccc;color:#fff;cursor:not-allowed;transform:none}
+.btn-secondary{background:#eee;color:#333}
+.btn-secondary:hover{background:#ddd}
+.btn-secondary:disabled{background:#eee;color:#aaa;cursor:not-allowed}
+.btn-danger{background:#fff0f0;color:#d32f2f}
+.btn-danger:hover{background:#ffe0e0}
+.btn-success{background:#e8f5e9;color:#2e7d32}
+.btn-success:hover{background:#c8e6c9}
+#progress{display:none;margin:10px 0}
+.progress-bg{width:100%;height:6px;background:#eee;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#ff6a00,#ee0979);width:0%;transition:width .4s;border-radius:3px}
+.progress-text{display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:4px}
+.dashboard{display:none}
+.dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.dash-badge{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:10px;padding:2px 10px;border-radius:10px}
+.word-cloud{display:flex;flex-wrap:wrap;gap:6px;padding:10px 0}
+.word-item{display:inline-block;padding:3px 10px;border-radius:12px;font-size:13px;color:#e05e00;background:#fff3e0;transition:.2s}
+.word-item:hover{transform:scale(1.05);background:#ffe0b2}
+.word-category{font-size:12px;font-weight:600;color:#666;margin:8px 0 4px;width:100%}
+.pattern-list{display:flex;flex-wrap:wrap;gap:8px}
+.pattern-card{border:1px solid #e8e8e8;border-radius:8px;padding:10px;flex:1 1 45%;min-width:200px;background:#fafafa}
+.pattern-card .pat{font-size:12px;color:#e05e00;font-weight:500}
+.pattern-card .ex{font-size:11px;color:#888;margin-top:4px;word-break:break-all}
+.pattern-card .cnt{font-size:10px;color:#aaa;margin-top:2px}
+#results{display:none}
+.result-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.result-table th{background:#fff8f0;text-align:left;padding:8px 10px;font-size:11px;color:#888;font-weight:600;border-bottom:2px solid #ffe0b2}
+.result-table td{padding:8px 10px;border-bottom:1px solid #f0f0f0;vertical-align:top}
+.result-table .model-cell{font-weight:600;color:#e05e00;white-space:nowrap}
+.result-table .title-cell{max-width:400px;word-break:break-word}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#323232;color:#fff;padding:10px 24px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.config-row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.config-row .form-group{flex:1;min-width:120px;margin-bottom:0}
+.url-hint{font-size:11px;color:#999;margin-top:4px;line-height:1.6}
+.url-hint code{background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:10px}
+.tab-bar{display:flex;border-bottom:2px solid #f0f0f0;margin-bottom:14px}
+.tab-item{padding:6px 16px;font-size:13px;font-weight:500;cursor:pointer;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px;transition:.2s}
+.tab-item.active{color:#ff6a00;border-bottom-color:#ff6a00}
+.tab-item:hover{color:#ff6a00}
+.input-with-add{display:flex;gap:8px;margin-bottom:6px}
+.input-with-add input{flex:1;padding:8px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:13px;outline:0}
+.input-with-add input:focus{border-color:#ff6a00}
+.input-with-add .add-btn{padding:8px 14px;border:none;background:#ff6a00;color:#fff;border-radius:8px;font-size:12px;cursor:pointer;white-space:nowrap}
+.input-with-add .add-btn:hover{background:#e05e00}
+.apply-overlay{position:fixed;inset:0;background:#f0f2f5;display:flex;align-items:center;justify-content:center;z-index:9999}
+.apply-box{background:#fff;border-radius:16px;box-shadow:0 4px 32px rgba(0,0,0,.1);padding:40px;width:400px;text-align:center}
+.apply-box h2{font-size:22px;margin-bottom:6px;background:linear-gradient(135deg,#ff6a00,#ee0979);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.apply-box p{color:#888;font-size:13px;margin-bottom:6px}
+.apply-box input{width:100%;padding:12px 16px;border:2px solid #e0e0e0;border-radius:10px;font-size:15px;outline:0;margin-bottom:16px;text-align:center}
+.apply-box input:focus{border-color:#ff6a00}
+.apply-box .btn{width:100%;padding:12px;font-size:15px}
+.apply-box .status-text{font-size:14px;padding:12px;border-radius:8px;margin-bottom:12px}
+.apply-box .status-pending{background:#fff8e1;color:#f57f17}
+.apply-box .status-approved{background:#e8f5e9;color:#2e7d32}
+.apply-box .status-rejected{background:#ffebee;color:#c62828}
+.apply-box .status-kicked{background:#fce4ec;color:#880e4f}
+footer{text-align:center;padding:16px 0;font-size:11px;color:#ccc}
+footer a{color:#bbb;text-decoration:none;cursor:pointer}
+footer a:hover{color:#ff6a00}
+.admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:9998}
+.admin-box{background:#fff;border-radius:16px;padding:30px;width:700px;max-width:90vw;max-height:85vh;overflow-y:auto}
+.admin-box h2{font-size:20px;margin-bottom:16px}
+.admin-login{text-align:center;padding:20px}
+.admin-login input{width:260px;padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;outline:0;text-align:center}
+.admin-login input:focus{border-color:#ff6a00}
+.admin-login .btn{margin-top:10px;width:260px}
+.admin-section{margin-bottom:16px}
+.admin-section h3{font-size:14px;font-weight:600;color:#666;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:6px}
+.admin-user{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;margin-bottom:4px;font-size:13px}
+.admin-user:hover{background:#f9f9f9}
+.admin-user .info{flex:1}
+.admin-user .info .name{font-weight:500}
+.admin-user .info .time{font-size:11px;color:#999;margin-left:8px}
+.admin-user .actions{display:flex;gap:4px}
+.admin-user .actions .btn{font-size:11px;padding:4px 10px;border-radius:6px}
+.admin-empty{color:#aaa;font-size:12px;padding:10px;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="apply-overlay" id="applyOverlay">
+  <div class="apply-box">
+    <h2>馃敟 TEMU 鏍囬鐢熸垚鍣?/h2>
+    <p>鍛樺伐璇疯緭鍏ュ悕瀛楃敵璇凤紝绠＄悊鍛樼偣涓嬫柟鍏ュ彛</p>
+    <input type="text" id="applyName" placeholder="杈撳叆浣犵殑鍚嶅瓧" onkeydown="if(event.key==='Enter')doApply()">
+    <button class="btn btn-primary" onclick="doApply()">馃搵 鐢宠浣跨敤</button>
+    <div id="applyStatus" style="margin-top:12px;display:none"></div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid #eee">
+      <button class="btn btn-secondary" onclick="document.getElementById('overlayAdminPwdInput').value='';document.getElementById('overlayAdminError').style.display='none';document.getElementById('overlayAdminPanel').style.display='block'" style="font-size:12px;padding:6px 16px">馃攽 绠＄悊鍛樼洿鎺ヨ繘鍏?/button>
+    </div>
+      <div id="overlayAdminPanel" style="display:none;margin-top:16px;padding-top:14px;border-top:1px solid #eee;text-align:center"><p style="color:#888;font-size:12px;margin-bottom:8px">绠＄悊鍛樺瘑鐮?/p><input type="password" id="overlayAdminPwdInput" placeholder="绠＄悊鍛樺瘑鐮? style="width:100%;padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;outline:0;text-align:center;margin-bottom:8px" onkeydown="if(event.key==='Enter')doAdminLoginOverlay()"><button class="btn btn-primary" onclick="doAdminLoginOverlay()" style="width:100%;padding:10px;font-size:14px">馃攽 杩涘叆绠＄悊鍚庡彴</button><div id="overlayAdminError" style="color:#d32f2f;font-size:12px;margin-top:6px;display:none">瀵嗙爜閿欒</div><button class="btn btn-secondary" onclick="document.getElementById('overlayAdminPanel').style.display='none'" style="font-size:11px;padding:4px 12px;margin-top:6px">杩斿洖</button></div>
+  </div>
+</div>
+
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-box">
+    <h2>馃攼 绠＄悊鍚庡彴</h2>
+    <div id="adminLoginPanel">
+      <div class="admin-login">
+        <p style="color:#888;font-size:13px;margin-bottom:10px">璇疯緭鍏ョ鐞嗗憳瀵嗙爜</p>
+        <input type="password" id="adminPwd" placeholder="绠＄悊鍛樺瘑鐮? onkeydown="if(event.key==='Enter')doAdminLogin()">
+        <button class="btn btn-primary" onclick="doAdminLogin()">鐧诲綍</button>
+        <div id="adminLoginError" style="color:#d32f2f;font-size:12px;margin-top:8px;display:none">瀵嗙爜閿欒</div>
+      </div>
+    </div>
+    <div id="adminContent" style="display:none">
+      <div class="admin-section">
+        <h3>鈴?寰呭鎵?/h3>
+        <div id="adminPending"></div>
+      </div>
+      <div class="admin-section">
+        <h3>鉁?宸叉巿鏉?/h3>
+        <div id="adminApproved"></div>
+      </div>
+      <div class="admin-section">
+        <h3>馃毇 宸叉嫆缁?/ 宸茶涪鍑?/h3>
+        <div id="adminHistory"></div>
+      </div>
+      <button class="btn btn-secondary" onclick="closeAdmin()" style="margin-top:8px;font-size:12px">鍏抽棴</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="header" style="position:relative">
+<h1>馃敟 TEMU 鐖嗘鏍囬鐢熸垚鍣?v2</h1>
+<p>涓婁紶鏂囦欢 / 绮樿创URL 路 SKC璇嗗埆 路 鎵归噺鐢熸垚 路 CSV瀵煎嚭</p>
+<a onclick="openAdmin()" style="position:absolute;top:50%;right:10px;transform:translateY(-50%);font-size:13px;color:#fff;background:linear-gradient(135deg,#667eea,#764ba2);padding:8px 18px;border-radius:10px;cursor:pointer;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(102,126,234,.4)">馃攼 绠＄悊鍚庡彴</a>
+</div>
+
+<div class="card" style="margin-top:0">
+  <div class="card-title">鈿欙笍 閰嶇疆 <span style="font-size:11px;color:#999;font-weight:400">锛堢鐞嗗憳瀵嗙爜鍦?.env 涓厤缃級</span></div>
+  <div class="config-row">
+    <div class="form-group" style="flex:2">
+      <label>API Key锛堝凡閰嶇疆鍦?.env 涓垯鐣欑┖锛?/label>
+      <input type="password" id="apiKey" placeholder="鐣欑┖鍒欎娇鐢ㄦ湇鍔＄ .env 閰嶇疆鐨?Key">
+    </div>
+    <div class="form-group">
+      <label>Kimi 妯″瀷</label>
+      <select id="apiModel">
+        <option value="kimi-k2.6">Kimi K2.6锛堟帹鑽愶紝鏀寔鐪嬪浘锛?/option>
+        <option value="moonshot-v1-128k">moonshot-v1-128k锛堢函鏂囧瓧锛?/option>
+      </select>
+    </div>
+    <div class="form-group" style="min-width:60px">
+      <label>鏍囬鏁?/label>
+      <input type="number" id="titleCount" value="1" min="1" max="10" style="width:70px">
+    </div>
+  </div>
+  <div style="font-size:11px;color:#999;margin-top:6px">馃挕 Kimi API Key 鑾峰彇锛?a href="https://platform.moonshot.cn" target="_blank" style="color:#ff6a00">platform.moonshot.cn</a></div>
+</div>
+
+<div class="two-col">
+
+<div class="card">
+  <div class="card-title">馃摎 鈶?鐖嗘鍙傝€冪礌鏉?<span class="badge badge-optional">棣栨蹇呭～</span></div>
+  <p style="font-size:12px;color:#888;margin-bottom:10px">涓婁紶鍙傝€冨浘+鏍囬锛孉I鍒嗘瀽鏍囬缁撴瀯鍜岀儹璇嶃€傜粨鏋滀繚瀛樺鐢ㄣ€?/p>
+  <div class="upload-area" id="refArea">
+    <div class="icon">馃柤锔?/div>
+    <p style="font-size:13px;color:#888">鐐瑰嚮涓婁紶鍙傝€冨浘锛堝彲閫夛級</p>
+    <div class="tip">鏀寔鎵归噺锛屽缓璁?-5寮?/div>
+    <input type="file" id="refFileInput" accept="image/*" multiple>
+  </div>
+  <div class="file-list" id="refFiles"></div>
+  <div style="margin-top:8px">
+    <label style="font-size:12px;font-weight:500;color:#666;display:block;margin-bottom:3px">绮樿创鏍囬锛堟瘡琛屼竴涓級 <span style="color:#aaa;font-weight:400">鎴?鍥剧墖URL | 鏍囬</span></label>
+    <textarea class="txt-area" id="refTitles" style="min-height:80px" placeholder="Premium Electric Wine Opener for Seniors...&#10;Portable Automatic Corkscrew, Wine Bottle Opener...&#10;&#10;鎴栨牸寮忥細鍥剧墖URL | 鏍囬"></textarea>
+  </div>
+  <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-primary" id="analyzeRefBtn" style="font-size:12px;padding:7px 16px">馃搳 鍒嗘瀽鐖嗘缁撴瀯</button>
+    <button class="btn btn-secondary" id="clearRefBtn" style="font-size:12px;padding:7px 16px">馃棏锔?娓呴櫎</button>
+  </div>
+  <div id="refStatus" style="font-size:11px;color:#888;margin-top:4px"></div>
+</div>
+
+<div class="card">
+  <div class="card-title">馃幆 鈶?鏂颁骇鍝佸浘 <span class="badge badge-required">蹇呭～</span></div>
+  <div class="tab-bar">
+    <span class="tab-item active" data-tab="file" onclick="switchNewTab('file')">馃搧 涓婁紶鏂囦欢</span>
+    <span class="tab-item" data-tab="url" onclick="switchNewTab('url')">馃敆 绮樿创鍥剧墖URL</span>
+  </div>
+  <div id="newFileTab">
+    <p style="font-size:12px;color:#888;margin-bottom:8px">鍚孲KC澶氬紶鍥惧懡鍚嶄负锛?code>鍨嬪彿-1.jpg</code>銆?code>鍨嬪彿-2.jpg</code></p>
+    <div class="upload-area" id="targetArea">
+      <div class="icon">馃摲</div>
+      <p style="font-size:13px;color:#888">鐐瑰嚮涓婁紶浜у搧鍥?/p>
+      <div class="tip">鏈€澶?0寮狅紝鏀寔鎵归噺</div>
+      <input type="file" id="targetFileInput" accept="image/*" multiple>
+    </div>
+    <div class="file-list" id="targetFiles"></div>
+  </div>
+  <div id="newUrlTab" style="display:none">
+    <p style="font-size:12px;color:#888;margin-bottom:8px">绮樿创鍥剧墖URL锛屾瘡琛屼竴涓猄KC銆傚鍥剧敤閫楀彿鍒嗛殧銆?/p>
+    <textarea class="txt-area" id="targetUrlInput" style="min-height:150px" placeholder="鏍煎紡锛氬瀷鍙峰悕 | 鍥剧墖URL1, 鍥剧墖URL2, 鍥剧墖URL3&#10;&#10;Wine-Opener-01 | https://img.example.com/1.jpg, https://img.example.com/2.jpg&#10;Corkscrew-02 | https://img.example.com/4.jpg&#10;Bottle-Stopper-03 | https://img.example.com/5.jpg, https://img.example.com/6.jpg"></textarea>
+  </div>
+  <div id="newStatus" style="font-size:11px;color:#888;margin-top:4px"></div>
+</div>
+
+</div>
+
+<div class="card dashboard" id="dashboard">
+  <div class="dash-header">
+    <span class="card-title">馃搳 涓棿绔湅鏉?<span class="dash-badge" id="dashBadge">宸蹭繚瀛?/span></span>
+    <button class="btn btn-secondary" id="downloadDashBtn" style="font-size:11px;padding:5px 12px">馃摜 涓嬭浇鐪嬫澘</button>
+  </div>
+  <div id="dashContent">
+    <div style="font-size:13px;color:#666;margin-bottom:6px">鍝佺被锛?strong id="dashCategory">-</strong> &nbsp;|&nbsp; 鍒嗘瀽鏍囬鏁帮細<strong id="dashCount">-</strong></div>
+    <div id="dashWords"></div>
+    <div style="margin-top:10px">
+      <div style="font-size:12px;font-weight:600;color:#666;margin-bottom:6px">馃搻 鏍囬缁撴瀯妯″紡</div>
+      <div class="pattern-list" id="dashPatterns"></div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:#888;background:#f9f9f9;padding:8px 12px;border-radius:8px" id="dashSummary"></div>
+  </div>
+</div>
+
+<div id="progress">
+  <div class="progress-bg"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-text">
+    <span id="progressStatus">鍑嗗涓?..</span>
+    <span id="progressCount">0/0</span>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px;padding:12px 16px">
+  <div style="font-size:13px;font-weight:600;margin-bottom:6px">馃摑 琛ュ厖瑕佹眰锛堥€夊～锛?/div>
+  <textarea id="extraRequirements" style="width:100%;min-height:50px;padding:8px 10px;border:1px solid #e0e0e0;border-radius:8px;font-size:13px;outline:0;resize:vertical;box-sizing:border-box" placeholder="渚嬪锛氶€傜敤浜虹兢涓虹敺濂抽€氱敤鎴栬€呬腑鎬ф锛屾爣棰樿姹傚寘鍚潗璐ㄤ俊鎭紝涓嶈鍖呭惈淇冮攢璇嶆眹...">閫傜敤浜虹兢涓虹敺濂抽€氱敤鎴栬€呬腑鎬ф锛涙牳蹇冨搧绫昏瘝蹇呭姞锛堝锛氬お闃抽暅/Sunglasses锛夛紱涓嫳鏂囨爣棰樺潎闇€鍖呭惈 UV400</textarea>
+</div>
+
+<div class="action-bar">
+  <button class="btn btn-primary" id="generateBtn">鉁?鎵归噺鐢熸垚鏍囬</button>
+  <button class="btn btn-success" id="exportBtn" disabled>馃摜 瀵煎嚭 CSV</button>
+  <button class="btn btn-danger" id="clearAllBtn">馃棏锔?娓呯┖鍏ㄩ儴</button>
+  <span id="statusText" style="font-size:12px;color:#888;margin-left:auto"></span>
+</div>
+
+<div id="results">
+  <div class="card">
+    <div class="card-title">馃幆 鐢熸垚缁撴灉 <span style="font-size:12px;color:#888;font-weight:400">鍏?span id="resultCount">0</span> 涓?/span></div>
+    <div style="overflow-x:auto">
+      <table class="result-table" id="resultTable">
+        <thead><tr id="resultHeader"><th>鍨嬪彿</th><th>淇℃伅</th><th>鏍囬</th></tr></thead>
+        <tbody id="resultBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+// ===== 鍛樺伐鐢宠 =====
+let MY_NAME = '';
+let APPLY_POLL_TIMER = null;
+
+function showApplyStatus(type, text) {
+  const el = $('applyStatus');
+  el.style.display = 'block';
+  el.innerHTML = '<div class="status-text status-' + type + '">' + text + '</div>';
+}
+
+async function doApply() {
+  const name = $('applyName').value.trim();
+  if (!name) { showToast('璇疯緭鍏ヤ綘鐨勫悕瀛?); return; }
+  const btn = document.querySelector('.apply-box .btn');
+  btn.disabled = true;
+  btn.textContent = '鈴?鐢宠涓?..';
+  try {
+    const resp = await fetch('/api/apply-user', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ name })
+    });
+    const data = await resp.json();
+    if (!resp.ok) { showToast(data.error); btn.disabled = false; btn.textContent = '馃搵 鐢宠浣跨敤'; return; }
+    MY_NAME = name;
+    localStorage.setItem('temu_user_name', name);
+    if (data.status === 'approved') {
+      showApplyStatus('approved', '鉁?瀹℃壒閫氳繃锛佹鍦ㄨ繘鍏?..');
+      setTimeout(enterApp, 1000);
+      return;
+    }
+    if (data.status === 'pending') {
+      showApplyStatus('pending', '鈴?宸叉彁浜ょ敵璇凤紝绛夊緟绠＄悊鍛樺鎵?..<br><span style="font-size:11px">瀹℃壒鍚庝細鑷姩杩涘叆</span>');
+      $('applyName').style.display = 'none';
+      btn.style.display = 'none';
+      startPollStatus();
+      return;
+    }
+    if (data.status === 'rejected') {
+      showApplyStatus('rejected', '鉂?鐢宠宸茶鎷掔粷锛岃鑱旂郴绠＄悊鍛?);
+      btn.disabled = false;
+      btn.textContent = '馃搵 鐢宠浣跨敤';
+      return;
+    }
+    if (data.status === 'kicked') {
+      showApplyStatus('kicked', '馃毇 浣犲凡琚Щ鍑猴紝璇疯仈绯荤鐞嗗憳');
+      btn.disabled = false;
+      btn.textContent = '馃搵 鐢宠浣跨敤';
+      return;
+    }
+    btn.disabled = false;
+    btn.textContent = '馃搵 鐢宠浣跨敤';
+  } catch(e) {
+    showToast('缃戠粶閿欒: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = '馃搵 鐢宠浣跨敤';
+  }
+}
+
+function startPollStatus() {
+  if (APPLY_POLL_TIMER) clearInterval(APPLY_POLL_TIMER);
+  APPLY_POLL_TIMER = setInterval(async () => {
+    if (!MY_NAME) return;
+    try {
+      const resp = await fetch('/api/check-user-status', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ name: MY_NAME })
+      });
+      const data = await resp.json();
+      if (data.status === 'approved') {
+        clearInterval(APPLY_POLL_TIMER);
+        showApplyStatus('approved', '鉁?瀹℃壒閫氳繃锛佹鍦ㄨ繘鍏?..');
+        setTimeout(enterApp, 1000);
+      } else if (data.status === 'rejected') {
+        clearInterval(APPLY_POLL_TIMER);
+        showApplyStatus('rejected', '鉂?鐢宠宸茶鎷掔粷');
+      } else if (data.status === 'kicked') {
+        clearInterval(APPLY_POLL_TIMER);
+        showApplyStatus('kicked', '馃毇 浣犲凡琚Щ鍑?);
+      }
+    } catch(e) {}
+  }, 3000);
+}
+
+function enterApp() {
+  $('applyOverlay').style.display = 'none';
+  if (APPLY_POLL_TIMER) clearInterval(APPLY_POLL_TIMER);
+  loadDashboard();
+}
+
+(async function checkAccess() {
+  const savedName = localStorage.getItem('temu_user_name');
+  if (savedName) {
+    try {
+      const resp = await fetch('/api/check-user-status', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ name: savedName })
+      });
+      const data = await resp.json();
+      if (data.status === 'approved') {
+        MY_NAME = savedName;
+        $('applyOverlay').style.display = 'none';
+        loadDashboard();
+        return;
+      }
+      if (data.status === 'pending') {
+        MY_NAME = savedName;
+        showApplyStatus('pending', '鈴?宸叉彁浜ょ敵璇凤紝绛夊緟绠＄悊鍛樺鎵?..');
+        $('applyName').style.display = 'none';
+        document.querySelector('.apply-box .btn').style.display = 'none';
+        startPollStatus();
+        return;
+      }
+    } catch(e) {}
+  }
+  $('applyOverlay').style.display = 'flex';
+})();
+
+// ===== 绠＄悊鍚庡彴 =====
+function openAdmin() { $('adminOverlay').style.display = 'flex'; $('adminLoginPanel').style.display = 'block'; $('adminContent').style.display = 'none'; $('adminPwd').value = ''; $('adminLoginError').style.display = 'none'; }
+function showAdminLoginInApply() {
+  document.getElementById('overlayAdminPwdInput').value = '';
+  document.getElementById('overlayAdminError').style.display = 'none';
+  document.getElementById('overlayAdminPanel').style.display = 'block';
+}
+
+async function doAdminLoginOverlay() {
+  const pwd = document.getElementById('overlayAdminPwdInput').value;
+  if (!pwd) { alert('璇疯緭鍏ョ鐞嗗憳瀵嗙爜'); return; }
+  try {
+    const resp = await fetch('/api/admin-login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ password: pwd })
+    });
+    const data = await resp.json();
+    if (!resp.ok) { document.getElementById('overlayAdminError').style.display = 'block'; return; }
+    document.getElementById('overlayAdminError').style.display = 'none';
+    MY_NAME = data.name || '绠＄悊鍛?;
+    localStorage.setItem('temu_user_name', MY_NAME);
+    enterApp();
+  } catch(e) {
+    document.getElementById('overlayAdminError').textContent = e.message;
+    document.getElementById('overlayAdminError').style.display = 'block';
+  }
+}
+
+function closeAdmin() { $('adminOverlay').style.display = 'none'; }
+
+async function doAdminLogin() {
+  const pwd = $('adminPwd').value;
+  try {
+    const resp = await fetch('/api/admin-get-users', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ password: pwd })
+    });
+    const data = await resp.json();
+    if (!resp.ok) { $('adminLoginError').style.display = 'block'; return; }
+    $('adminLoginError').style.display = 'none';
+    $('adminLoginPanel').style.display = 'none';
+    $('adminContent').style.display = 'block';
+    renderAdminUsers(data.users, pwd);
+  } catch(e) {
+    $('adminLoginError').textContent = '缃戠粶閿欒';
+    $('adminLoginError').style.display = 'block';
+  }
+}
+
+function renderAdminUsers(users, pwd) {
+  const pending = users.filter(u => u.status === 'pending');
+  const approved = users.filter(u => u.status === 'approved');
+  const history = users.filter(u => u.status === 'rejected' || u.status === 'kicked');
+
+  const e = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&#34;');
+
+  const renderUser = (u, actions) => {
+    const time = new Date(u.appliedAt).toLocaleString();
+    return '<div class="admin-user"><div class="info"><span class="name">' + e(u.name) + '</span><span class="time">鐢宠: ' + time + '</span></div><div class="actions">' + actions + '</div></div>';
+  };
+
+  const actBtn = (name, action, label, cls) =>
+    '<button class="btn btn-' + cls + '" onclick="adminAction(\'' + action + '\',\'' + e(name) + '\')">' + label + '</button>';
+
+  let html = '';
+  if (!pending.length) html += '<div class="admin-empty">鏆傛棤寰呭鎵?/div>';
+  else pending.forEach(u => { html += renderUser(u, actBtn(u.name, 'approve', '鉁?鍚屾剰', 'success') + actBtn(u.name, 'reject', '鉂?鎷掔粷', 'danger')); });
+  $('adminPending').innerHTML = html;
+
+  html = '';
+  if (!approved.length) html += '<div class="admin-empty">鏆傛棤宸叉巿鏉?/div>';
+  else approved.forEach(u => { html += renderUser(u, actBtn(u.name, 'kick', '馃毇 韪㈠嚭', 'danger')); });
+  $('adminApproved').innerHTML = html;
+
+  html = '';
+  if (!history.length) html += '<div class="admin-empty">鏆傛棤</div>';
+  else history.forEach(u => {
+    const label = u.status === 'rejected' ? '鉂?鎷掔粷' : '馃毇 韪㈠嚭';
+    html += renderUser(u, '<span style="color:#999;font-size:11px">' + label + '</span>');
+  });
+  $('adminHistory').innerHTML = html;
+
+  window._adminPwd = pwd;
+}
+
+async function adminAction(action, name) {
+  const pwd = window._adminPwd;
+  try {
+    const resp = await fetch('/api/admin-action', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ password: pwd, action, name })
+    });
+    if (!resp.ok) { showToast('鎿嶄綔澶辫触'); return; }
+    showToast(action === 'approve' ? '鉁?宸插悓鎰? : action === 'reject' ? '鉂?宸叉嫆缁? : '馃毇 宸茶涪鍑?);
+    const resp2 = await fetch('/api/admin-get-users', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ password: pwd })
+    });
+    const data = await resp2.json();
+    renderAdminUsers(data.users, pwd);
+  } catch(e) { showToast('鎿嶄綔澶辫触: ' + e.message); }
+}
+
+// ===== 鐘舵€?=====
+const S = {
+  refImgs: [],
+  targetImgs: [],
+  newTab: 'file',
+  results: [],
+  genCount: 1,
+  hasDashboard: false,
+};
+
+function showToast(msg, dur) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function() { t.classList.remove('show'); }, dur || 3000);
+}
+
+function switchNewTab(tab) {
+  S.newTab = tab;
+  document.querySelectorAll('.tab-item').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
+  $('newFileTab').style.display = tab === 'file' ? 'block' : 'none';
+  $('newUrlTab').style.display = tab === 'url' ? 'block' : 'none';
+}
+
+const refFileInput = $('refFileInput');
+refFileInput.onchange = function() {
+  for (const f of Array.from(refFileInput.files)) {
+    if (!f.type.startsWith('image/')) continue;
+    if (S.refImgs.some(function(x) { return x.name === f.name; })) continue;
+    if (S.refImgs.length >= 30) break;
+    S.refImgs.push({ file: f, name: f.name, url: URL.createObjectURL(f) });
+  }
+  refFileInput.value = '';
+  renderRefFiles();
+};
+
+function renderRefFiles() {
+  const el = $('refFiles');
+  if (!S.refImgs.length) { el.innerHTML = ''; return; }
+  el.innerHTML = S.refImgs.map(function(f,i) {
+    return '<span class="file-tag file-tag-upload"><span class="name">' + f.name + '</span><span class="remove" data-idx="' + i + '">脳</span></span>';
+  }).join('');
+  el.querySelectorAll('.remove').forEach(function(e) {
+    e.onclick = function() {
+      const i = parseInt(e.dataset.idx);
+      URL.revokeObjectURL(S.refImgs[i].url);
+      S.refImgs.splice(i, 1);
+      renderRefFiles();
+    };
+  });
+}
+
+const targetFileInput = document.getElementById('targetFileInput');
+targetFileInput.onchange = function() {
+  for (const f of Array.from(targetFileInput.files)) {
+    if (!f.type.startsWith('image/')) continue;
+    if (S.targetImgs.some(x => x.name === f.name)) continue;
+    if (S.targetImgs.length >= 50) break;
+    S.targetImgs.push({ file: f, name: f.name, url: URL.createObjectURL(f) });
+  }
+  targetFileInput.value = '';
+  renderTargetFiles();
+};
+
+function renderTargetFiles() {
+  const el = document.getElementById('targetFiles');
+  if (!S.targetImgs.length) { el.innerHTML = ''; return; }
+  el.innerHTML = S.targetImgs.map(function(f,i) {
+    return '<span class="file-tag file-tag-upload"><span class="name">' + f.name + '</span><span class="remove" data-idx="' + i + '">&times;</span></span>';
+  }).join('');
+  el.querySelectorAll('.remove').forEach(function(e) {
+    e.onclick = function() {
+      const i = parseInt(e.dataset.idx);
+      URL.revokeObjectURL(S.targetImgs[i].url);
+      S.targetImgs.splice(i, 1);
+      renderTargetFiles();
+    };
+  });
+  showSKCInfo();
+}
+
+function showSKCInfo() {
+  var groups = new Map();
+  var singles = 0;
+  for (var _i = 0; _i < S.targetImgs.length; _i++) {
+    var item = S.targetImgs[_i];
+    var name = item.name.replace(/\.[^.]+$/, '');
+    var dashIdx = name.lastIndexOf('-');
+    if (dashIdx > 0 && dashIdx < name.length - 1) {
+      var prefix = name.substring(0, dashIdx);
+      var suffix = name.substring(dashIdx + 1);
+      if (/^\d{1,4}$/.test(suffix) || /^[a-zA-Z]\d{1,3}$/.test(suffix)) {
+        groups.set(prefix, (groups.get(prefix)||0) + 1);
+        continue;
+      }
+    }
+    singles++;
+  }
+  var info = '';
+  if (groups.size) {
+    info += 'SKC鍒嗙粍锛?;
+    for (var _i2 = 0; _i2 < groups.size; _i2++) {
+      // iterate manually
+    }
+    groups.forEach(function(cnt, nm) { info += ' ' + nm + '(' + cnt + '寮?'; });
+  }
+  if (singles) info += ' 鍙婂崟鐙? + singles + '寮?;
+  if (!info) info = S.targetImgs.length + '寮犲浘';
+  document.getElementById('newStatus').textContent = '宸蹭笂浼?' + S.targetImgs.length + ' 寮?路 ' + info;
+}
+
+async function loadDashboard() {
+  try {
+    var resp = await fetch('/api/ref-analysis');
+    var data = await resp.json();
+    if (data.exists) {
+      S.hasDashboard = true;
+      renderDashboard(data.data);
+      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('refStatus').textContent = '宸叉湁鐖嗘鍒嗘瀽鏁版嵁锛? + new Date(data.data._savedAt).toLocaleString() + '锛?;
+    }
+  } catch(e) {}
+}
+
+function renderDashboard(d) {
+  var catStr = typeof d.category === 'object' ? (d.category.cn||'') + ' / ' + (d.category.en||'') : d.category;
+  document.getElementById('dashCategory').textContent = catStr || '鏈垎绫?;
+  document.getElementById('dashCount').textContent = d._titleCount || '-';
+  var summStr = typeof d.summary === 'object' ? (d.summary.cn||'') + ' / ' + (d.summary.en||'') : d.summary;
+  document.getElementById('dashSummary').textContent = summStr || '';
+  var wordsEl = document.getElementById('dashWords');
+  var hw = d.hotWords || {};
+  var catLabels = {feature:'鍔熻兘/Feature', material:'鏉愯川/Material', scene:'鍦烘櫙/Scene', sellingPoint:'鍗栫偣/Selling Point', targetAudience:'浜虹兢/Target', modifiers:'淇グ/Modifier', marketing:'钀ラ攢/Marketing'};
+  var html = '';
+  for (var cat in hw) {
+    var words = hw[cat];
+    if (!words||!words.length) continue;
+    html += '<div class="word-category">' + (catLabels[cat]||cat) + '</div><div class="word-cloud">';
+    for (var _i3 = 0; _i3 < words.length; _i3++) {
+      var w = words[_i3];
+      var cn = w.cn || (typeof w === 'string' ? w : '');
+      var en = w.en || '';
+      var cnt = w.count ? ' (' + w.count + ')' : '';
+      var label = en ? cn + ' / ' + en + cnt : cn + cnt;
+      html += '<span class="word-item" style="font-size:' + Math.min(22,Math.max(11,12+label.length*0.3)) + 'px">' + label + '</span>';
+    }
+    html += '</div>';
+  }
+  wordsEl.innerHTML = html || '<div style="color:#aaa;font-size:12px">鏆傛棤鍏抽敭璇?/div>';
+  var patsEl = document.getElementById('dashPatterns');
+  var patterns = d.titlePatterns || [];
+  if (patterns.length) {
+    var patHtml = patterns.map(function(p) {
+      var patStr = typeof p.pattern === 'object' ? (p.pattern.cn||'') + ' / ' + (p.pattern.en||'') : p.pattern;
+      var exStr = typeof p.example === 'object' ? (p.example.cn||'') + ' / ' + (p.example.en||'') : (p.example||'-');
+      return '<div class="pattern-card"><div class="pat">' + patStr + '</div><div class="ex">渚嬶細' + exStr + '</div><div class="cnt">鍑虹幇 ' + (p.count||'?') + ' 娆?/div></div>';
+    }).join('');
+    patsEl.innerHTML = patHtml;
+  } else {
+    patsEl.innerHTML = '<div style="color:#aaa;font-size:12px">鏆傛棤</div>';
+  }
+}
+
+document.getElementById('analyzeRefBtn').onclick = async function() {
+  var titles = document.getElementById('refTitles').value.trim();
+  if (!titles && !S.refImgs.length) { showToast('璇蜂笂浼犲弬鑰冨浘鎴栬緭鍏ユ爣棰?); return; }
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = '鈴?鍒嗘瀽涓?..';
+  document.getElementById('refStatus').textContent = '鈴?AI鍒嗘瀽鐖嗘缁撴瀯...';
+  try {
+    var formData = new FormData();
+    formData.append('rawInput', titles);
+    for (var _i4 = 0; _i4 < S.refImgs.length; _i4++) formData.append('images', S.refImgs[_i4].file);
+    var resp = await fetch('/api/analyze-ref', { method: 'POST', body: formData });
+    var data = await resp.json();
+    if (!resp.ok) throw new Error(data.error);
+    showToast('鍒嗘瀽瀹屾垚锛?);
+    S.hasDashboard = true;
+    renderDashboard(data.data);
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('refStatus').textContent = '鍒嗘瀽瀹屾垚';
+  } catch(e) {
+    showToast('澶辫触: ' + (e.message||''));
+    document.getElementById('refStatus').textContent = '澶辫触: ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '鍒嗘瀽鐖嗘缁撴瀯';
+  }
+};
+
+document.getElementById('clearRefBtn').onclick = async function() {
+  try {
+    await fetch('/api/clear-ref', { method: 'POST' });
+    S.hasDashboard = false;
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('refStatus').textContent = '宸叉竻闄?;
+    showToast('宸叉竻闄?);
+  } catch(e) { showToast('澶辫触: ' + e.message); }
+};
+
+document.getElementById('downloadDashBtn').onclick = async function() {
+  try {
+    var resp = await fetch('/api/ref-analysis');
+    var d = await resp.json();
+    if (!d.exists) { showToast('鏆傛棤鏁版嵁'); return; }
+    var blob = new Blob([JSON.stringify(d.data,null,2)], {type:'application/json'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'hotwords_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    showToast('涓嬭浇鎴愬姛');
+  } catch(e) { showToast('澶辫触: ' + e.message); }
+};
+
+document.getElementById('generateBtn').onclick = async function() {
+  var isFileMode = S.newTab === 'file';
+  if (isFileMode && !S.targetImgs.length) { showToast('璇蜂笂浼犱骇鍝佸浘'); return; }
+  if (!isFileMode && !document.getElementById('targetUrlInput').value.trim()) { showToast('璇风矘璐村浘鐗嘦RL'); return; }
+  if (!S.hasDashboard && !confirm('鏃犵垎娆惧弬鑰冩暟鎹紝灏嗙户缁笉浣跨敤鍙傝€冿紝纭畾锛?)) return;
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = '鈴?鐢熸垚涓?..';
+  document.getElementById('progress').style.display = 'block';
+  var pf = document.getElementById('progressFill'), ps = document.getElementById('progressStatus');
+  var genCount = parseInt(document.getElementById('titleCount').value) || 1;
+  try {
+    S.results = [];
+    ps.textContent = '澶勭悊涓?..';
+    pf.style.width = '10%';
+    if (isFileMode) {
+      pf.style.width = '20%';
+      ps.textContent = '涓婁紶鏂囦欢...';
+      var formData = new FormData();
+      formData.append('titleCount', genCount);
+      formData.append('extraRequirements', document.getElementById('extraRequirements').value.trim() || '');
+      for (var _i5 = 0; _i5 < S.targetImgs.length; _i5++) formData.append('images', S.targetImgs[_i5].file);
+      ps.textContent = 'AI鎵归噺鐢熸垚鏍囬...';
+      pf.style.width = '50%';
+      var resp = await fetch('/api/generate-titles-upload', { method: 'POST', body: formData });
+      var data = await resp.json();
+      if (!resp.ok) throw new Error(data.error);
+      S.results = data.data.products || [];
+    } else {
+      ps.textContent = '涓嬭浇鍥剧墖骞惰姹侫I...';
+      pf.style.width = '30%';
+      var rawInput = document.getElementById('targetUrlInput').value.trim();
+      var requirements = document.getElementById('extraRequirements').value.trim();
+      var resp = await fetch('/api/generate-titles', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ rawInput: rawInput, titleCount: genCount, extraRequirements: requirements })
+      });
+      pf.style.width = '70%';
+      var data = await resp.json();
+      if (!resp.ok) throw new Error(data.error);
+      S.results = data.data.products || [];
+    }
+    pf.style.width = '100%';
+    ps.textContent = '瀹屾垚锛?;
+    S.genCount = genCount;
+    if (S.results.length) {
+      renderResults(genCount);
+      document.getElementById('exportBtn').disabled = false;
+      document.getElementById('results').style.display = 'block';
+      showToast('鐢熸垚 ' + S.results.length + ' 涓猄KC鏍囬锛?);
+    } else { showToast('鏈敓鎴愭湁鏁堢粨鏋?); }
+  } catch(e) {
+    showToast('澶辫触: ' + (e.message||''));
+    ps.textContent = '澶辫触: ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '鎵归噺鐢熸垚鏍囬';
+    setTimeout(function() { document.getElementById('progress').style.display = 'none'; }, 3000);
+  }
+};
+
+function renderResults(n) {
+  var head = document.getElementById('resultHeader');
+  var showCols = Math.max(1, n);
+  var headers = '<th>鍨嬪彿/Model</th><th>涓?EN</th>';
+  for (var i = 1; i <= showCols; i++) headers += '<th>鏍囬' + i + '</th>';
+  head.innerHTML = headers;
+  document.getElementById('resultBody').innerHTML = S.results.map(function(r) {
+    var titles = r.titles || [];
+    var feats = r.features || {};
+    var featStr = typeof feats === 'object' ? (feats.cn||'') + ' / ' + (feats.en||'') : feats;
+    var cells = '<td class="model-cell">' + r.modelName + '</td>';
+    cells += '<td style="font-size:11px;color:#888;max-width:150px">' + featStr + '</td>';
+    for (var i = 0; i < showCols; i++) {
+      var t = titles[i] || {};
+      var cn = t.cn || '';
+      var en = t.en || '';
+      cells += '<td class="title-cell">' + (cn ? '<b>涓枃:</b> ' + cn + '<br>' : '') + (en ? '<b>EN:</b> ' + en : t || '-') + '</td>';
+    }
+    return '<tr>' + cells + '</tr>';
+  }).join('');
+  document.getElementById('resultCount').textContent = S.results.length;
+}
+
+document.getElementById('exportBtn').onclick = function() {
+  if (!S.results.length) return;
+  var n = S.genCount;
+  var colCount = Math.max(1, n);
+  var head = ['鍨嬪彿/Model', '鐗瑰緛/Features'];
+  for (var i = 1; i <= colCount; i++) { head.push('涓枃鏍囬' + i); head.push('EN Title' + i); }
+  var esc = function(v) { var s = String(v||''); return s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0 ? '"' + s.replace(/"/g,'""') + '"' : s; };
+  var rows = S.results.map(function(r) {
+    var titles = r.titles || [];
+    var feats = r.features || {};
+    var featStr = typeof feats === 'object' ? (feats.cn||'') + ' | ' + (feats.en||'') : feats;
+    var row = [esc(r.modelName), esc(featStr)];
+    for (var i = 0; i < colCount; i++) { var t = titles[i]||{}; row.push(esc(t.cn||''), esc(t.en||'')); }
+    return row.join(',');
+  });
+  var csv = '锘? + head.join(',') + '\n' + rows.join('\n');
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download = 'TEMU_titles_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  showToast('瀵煎嚭鎴愬姛');
+};
+
+document.getElementById('clearAllBtn').onclick = function() {
+  for (var _i6 = 0; _i6 < S.refImgs.length; _i6++) URL.revokeObjectURL(S.refImgs[_i6].url);
+  for (var _i7 = 0; _i7 < S.targetImgs.length; _i7++) URL.revokeObjectURL(S.targetImgs[_i7].url);
+  S.refImgs = []; S.targetImgs = []; S.results = [];
+  document.getElementById('refTitles').value = '';
+  document.getElementById('targetUrlInput').value = '';
+  document.getElementById('refFiles').innerHTML = '';
+  document.getElementById('targetFiles').innerHTML = '';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('progress').style.display = 'none';
+  document.getElementById('exportBtn').disabled = true;
+  document.getElementById('statusText').textContent = '';
+  document.getElementById('newStatus').textContent = '';
+  showToast('宸叉竻绌?);
+};
+</script>
+</body>
+</html>
